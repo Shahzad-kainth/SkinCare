@@ -2,7 +2,7 @@ import {Routes,Route} from 'react-router'
 import SignupPage from './pages/signupPage'
 import LoginPage from './pages/loginPage'
 import Homepage from './pages/homePage';
-import Layout from './components/Layout'
+import HomePageLayout from './layouts/HomePageLayout'
 import BlogPage from './pages/blogPage';
 function App() {
   
@@ -10,7 +10,7 @@ function App() {
   return (
 
     <Routes>
-        <Route element={<Layout/>}>
+        <Route element={<HomePageLayout/>}>
         <Route path='/' element={<Homepage></Homepage>}></Route>
         <Route path='/blog/:id' element={<BlogPage/>}></Route>
          </Route>

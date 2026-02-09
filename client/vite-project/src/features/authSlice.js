@@ -100,23 +100,25 @@ const authSlice=createSlice({
         //logOut
 
          .addCase(logoutUser.pending,(state,action)=>{
-            state.login.status = 'loading';
-            state.login.error = null;
-            state.signup.status = 'loading';
-            state.signup.error = null;
+             state.logout.status='loading';
+             state.logout.error=null;
          })
          .addCase(logoutUser.fulfilled,(state,action)=>{
             state.user = null;
+
+            state.logout.status = 'succeeded';
+            state.logout.error = null;
+
             state.login.status = 'idle';
-            state.signup.status = 'idle';
             state.login.error = null;
+
+            state.signup.status = 'idle';
             state.signup.error = null;
-         })
+
+           })
          .addCase(logoutUser.rejected,(state,action)=>{
-            state.login.error = action.payload;
-            state.signup.error = action.payload;
-            state.login.status = 'failed';
-            state.signup.status = 'failed';
+             state.logout.status='idle';
+             state.logout.error=action.payload;
          })
     }
 })

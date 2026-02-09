@@ -1,7 +1,7 @@
 import Footer from "./Footer";
 import Navbar from "./Navbar";
 import { Outlet } from "react-router";
-function Layout(){
+function HomePageLayout(){
     return(
         <>
         <Navbar/>
@@ -10,4 +10,4 @@ function Layout(){
         </>
     )
 }
-export default Layout;
+export default HomePageLayout;
