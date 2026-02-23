@@ -84,7 +84,7 @@ const logout=async(req,res)=>{
     try{
      const token=req.cookies.token;
       const payload=jwt.decode(token);
-       const expireTime=payload.exp-Math.floor(Date.now()/1000)
+       let expireTime=payload.exp-Math.floor(Date.now()/1000)
        if(expireTime<1){
         expireTime=1;
        }
@@ -97,4 +97,17 @@ const logout=async(req,res)=>{
         res.status(500).json({message:"Internal Server Error"});
     }
 }
-module.exports={signup,login,logout};
+const checkAuth=(req,res)=>{
+    try{
+       res.status(200).json({
+        message:"success",
+        data:req.result
+       })
+    }
+    catch(error){
+          res.status(500).json({
+            message:"Internal Server Error"
+          })
+    }
+}
+module.exports={signup,login,logout,checkAuth};

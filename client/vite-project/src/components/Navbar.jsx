@@ -11,12 +11,13 @@ const Navbar = () => {
         <Link to="/" className="text-2xl font-bold text-pink-600 cursor-pointer">
           GlowBlog
         </Link>
-
+         
         {/* Desktop Menu */}
         <nav className="hidden md:flex space-x-6 font-medium text-gray-700">
           <Link to="/" className="hover:text-pink-500 transition">Home</Link>
           <Link to='/blog' className="hover:text-pink-500 transition">Blog</Link>
           <Link to="/contact" className="hover:text-pink-500 transition">Contact</Link>
+          <Link to="/signin" className="hover:text-pink-500 transition">Sign in</Link>
           {/* Add other links if needed */}
         </nav>
 
@@ -67,6 +68,7 @@ const Navbar = () => {
           <Link to="/" className="block hover:text-pink-500 transition">Home</Link>
           <Link to="/blog" className="block hover:text-pink-500 transition">Blog</Link>
           <Link to="/contact" className="block hover:text-pink-500 transition">Contact</Link>
+          <Link to="/signin" className="hover:text-pink-500 transition">Sign in</Link>
         </div>
       )}
     </header>

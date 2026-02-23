@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const blogSchema = new mongoose.Schema(
   {
     title: {
@@ -9,9 +8,8 @@ const blogSchema = new mongoose.Schema(
       trim: true,
     },
     content: {
-      type: String,
+      type: Object,
       required: true,
-      trim:true,
     },
     category: {
       type: String,
@@ -19,12 +17,11 @@ const blogSchema = new mongoose.Schema(
       minLength: 3, 
       maxLength: 60,
     },
-    // image: {
-    //   type: String,
-    //   minLength: 3, 
-    //   maxLength: 500,
-    // },
-    author: { type: mongoose.Schema.Types.ObjectId, ref: 'user' },
+    image: {
+       url: {type:String,required:true},
+       public_id: {type:String,required:true}
+      },
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'user',required:true },
 
   },
   {

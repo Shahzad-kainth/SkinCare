@@ -1,11 +1,10 @@
 import axiosClient from "./axiosClient";
-
-export const postBlog=()=>{
-    return axiosClient.post('/api/blogs/postBlog');
+export const postBlog=(data)=>{
+    return axiosClient.post('/api/blogs/postBlog',data);
 }
 
-export const editBlog=(id)=>{
-   return axiosClient.put(`/api/blogs/editblog/${id}`)
+export const editBlog=(id,data)=>{
+   return axiosClient.put(`/api/blogs/editblog/${id}`,data)
 }
 export const deleteBlog=(id)=>{
    return  axiosClient.delete(`/api/blogs/deleteblog/${id}`)

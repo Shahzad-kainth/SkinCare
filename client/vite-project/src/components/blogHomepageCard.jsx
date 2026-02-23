@@ -1,7 +1,16 @@
 import React from "react";
 import { Link } from "react-router";
-
 const BlogCard = ({ blog }) => {
+
+   const getPlainText=(delta)=>{
+       if(!delta?.ops) return ""
+       return delta.ops
+       .map(op => typeof op.insert === "string" ? op.insert : "")
+       .join("")
+       .replace(/\n/g, " ")
+       .trim();  
+   }
+
   return (
     <Link
       to={`/blog/${blog._id}`}
@@ -11,9 +20,9 @@ const BlogCard = ({ blog }) => {
       {blog.image ? (
         <div className="h-48 w-full overflow-hidden rounded-t-2xl">
           <img
-            src={blog.image}
+            src={blog.image.url}
             alt={blog.title}
-            className="w-full h-full object-cover hover:scale-105 transform transition duration-500"
+            className="w-full h-full object-contain hover:scale-105 transform transition duration-500"
           />
         </div>
       ) : null}
@@ -33,7 +42,7 @@ const BlogCard = ({ blog }) => {
 
         {/* Blog Snippet */}
         <p className="text-gray-600 mb-6 text-sm line-clamp-3">
-          {blog.content}
+          {getPlainText(blog.content)}
         </p>
 
         {/* Author and Date */}

@@ -1,21 +1,25 @@
 
 import { useNavigate } from "react-router";
-import {useSelector} from 'react-redux';
+import {Link} from "react-router"
+import {useSelector,useDispatch} from 'react-redux';
 import {logoutUser} from '../../features/authSlice';
 const AdminHeader = () => {
-  const navigate = useNavigate();
+   const dispatch=useDispatch();
+  const navigate = useNavigate()
     const logoutState=useSelector((state)=>state.auth.logout)
   const handleLogout = () => {
-     logoutUser()
+     dispatch(logoutUser())
      if(logoutState.status==='succeeded')
      navigate("/login");
   };
 
   return (
     <header className="h-16 bg-white border-b px-6 flex items-center justify-between">
+     
       <h1 className="text-lg font-semibold text-gray-800">
-        Admin Dashboard
+         <Link to="/">Home</Link>
       </h1>
+      
 
       <button
         onClick={handleLogout}

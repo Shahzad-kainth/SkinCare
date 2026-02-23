@@ -45,6 +45,20 @@ export const logoutUser=createAsyncThunk(
         }
     }
 )
+export const checkAuth=createAsyncThunk(
+    'auth/checkAuth',
+    async(_,{rejectWithValue})=>{
+        try{
+          const response=await authapi.checkAuth();
+           return response.data;
+        }
+        catch(error){
+            return rejectWithValue(
+                error.response.data || error.message
+            )
+        }
+    }
+)
 const initialState = {
   user: null,
 
@@ -61,6 +75,10 @@ const initialState = {
     status: 'idle',
     error: null,
   },
+  checkAuth:{
+    status:'idle',
+    error:null,
+  }
 };
 
 const authSlice=createSlice({
@@ -120,8 +138,20 @@ const authSlice=createSlice({
              state.logout.status='idle';
              state.logout.error=action.payload;
          })
+         //CheckAuth
+         .addCase(checkAuth.pending,(state)=>{
+             state.checkAuth.status='loading';
+             state.checkAuth.error=null
+         })
+         .addCase(checkAuth.fulfilled,(state,action)=>{
+            state.checkAuth.status='succeeded';
+            state.user = action.payload.user;
+         })
+         .addCase(checkAuth.rejected,(state,action)=>{
+            state.checkAuth.status='failed';
+            state.checkAuth.error=action.payload;
+         })
     }
 })
-
 
 export default authSlice.reducer;

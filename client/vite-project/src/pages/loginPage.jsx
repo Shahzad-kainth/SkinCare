@@ -16,25 +16,28 @@ function LoginPage(){
       const {
         register,
         handleSubmit,
+        reset,
         formState:{errors}
       }=useForm({
-            resolver:zodResolver(loginSchema)
+            resolver:zodResolver(loginSchema),
+             mode: "onChange"
         })
          
         const user=useSelector((state)=>state.auth.user)
         const onSubmit=(data)=>{
             dispatch(loginUser(data))
+            // reset();
         }
         useEffect(() => {
         if (user) {
-           navigate('/signup');
+           navigate('/admin');
         }
         }, [user, navigate]);
 
         return(
             <div className="min-h-screen min-w-screen flex justify-center items-center  bg-gradient-to-r from-blue-400 to-purple-600 px-4">
                 <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-                     <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">SignIn</h2>
+                     <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Sign In</h2>
                      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                         {/* email Input */}
                         <div>
@@ -61,13 +64,13 @@ function LoginPage(){
              type='submit'
              className='w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md font-semibold transition duration-300'
              >
-             SignIn
+             Sign In
              </button>
                 </form>
                  <p className="text-center text-gray-500 mt-4">
                          Register Here?{' '}
                  <NavLink to="/signup" className="text-blue-500 hover:underline">
-                     SignUp
+                     Sign Up
                    </NavLink>
                   </p>
             </div>

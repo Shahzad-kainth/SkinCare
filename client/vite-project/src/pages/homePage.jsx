@@ -1,35 +1,18 @@
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import BlogCard from "../components/blogHomepageCard";
-import { getAllBlogs } from "../api/blogapis";
-// import Navbar from "../components/Navbar";
-// import Footer from "../components/Footer";
-
+import { fetchAllBlogs,setPage,setSearch } from "../features/blogsSlice";
+import { useSelector,useDispatch } from "react-redux";
 const HomePage = () => {
-  const [blogs, setBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const dispatch=useDispatch()
+  const {blogs,loading,search,page,totalPages}=useSelector((state)=>state.blogs)
+      console.log(totalPages);
   const limit = 6;
 
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      const response = await getAllBlogs(page, limit, search);
-      if (response.data.success) {
-        setBlogs(response.data.data);
-        setTotalPages(response.data.totalPages);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.error("Failed to fetch blogs:", error);
-      setLoading(false);
-    }
-  };
+ 
 
   useEffect(() => {
-    fetchBlogs();
-  }, [page, search]);
+    dispatch(fetchAllBlogs({page,limit,search}))
+  }, [page,search]);
 
   return (
     <>
@@ -47,8 +30,8 @@ const HomePage = () => {
               placeholder="Search blogs..."
               value={search}
               onChange={(e) => {
-                setSearch(e.target.value);
-                setPage(1);
+                 dispatch(setSearch(e.target.value))
+                 dispatch(setPage(1))
               }}
               className="w-full p-3 pl-10 border border-gray-200 rounded-full shadow-sm focus:outline-none focus:ring-2 focus:ring-pink-300 focus:border-pink-300"
             />
@@ -76,7 +59,7 @@ const HomePage = () => {
           <div className="flex justify-center mt-12 space-x-3">
             {/* Prev Button */}
             <button
-              onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+               onClick={() => dispatch(setPage(Math.max(page - 1, 1)))}
               disabled={page === 1}
               className="px-4 py-2 rounded-full bg-pink-100 hover:bg-pink-200 disabled:opacity-50 transition"
             >
@@ -88,7 +71,7 @@ const HomePage = () => {
               (num) => (
                 <button
                   key={num}
-                  onClick={() => setPage(num)}
+                  onClick={() => dispatch(setPage(num))}
                   className={`px-4 py-2 rounded-full transition ${
                     page === num
                       ? "bg-pink-500 text-white"
@@ -102,7 +85,7 @@ const HomePage = () => {
 
             {/* Next Button */}
             <button
-              onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+              onClick={() => dispatch(setPage(Math.min(page + 1, totalPages)))}
               disabled={page === totalPages}
               className="px-4 py-2 rounded-full bg-pink-100 hover:bg-pink-200 disabled:opacity-50 transition"
             >

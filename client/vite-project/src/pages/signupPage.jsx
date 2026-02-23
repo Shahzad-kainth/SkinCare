@@ -18,7 +18,8 @@ function SignupPage(){
         handleSubmit,
         formState: { errors },
       }=useForm({
-        resolver:zodResolver(signupSchema)
+        resolver:zodResolver(signupSchema),
+        mode: "onChange"
       })
     const user = useSelector((state) => state.auth.user); 
       const onSubmit=(data)=>{
@@ -67,13 +68,13 @@ function SignupPage(){
              type='submit'
              className='w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-md font-semibold transition duration-300'
              >
-             SignUp
+             Sign Up
              </button>
       </form>
       <p className="text-center text-gray-500 mt-4">
         Already have an account?{' '}
         <NavLink to="/signin" className="text-blue-500 hover:underline">
-          SignIn
+          Sign In
         </NavLink>
       </p>
     </div>

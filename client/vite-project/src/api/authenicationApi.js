@@ -9,3 +9,7 @@ export const signup=(credentials)=>{
 export const logout=()=>{
  return axiosClient.post('/api/user/logout');
 }
+
+export const checkAuth=()=>{
+   return axiosClient.post('/api/user/checkAuth')
+}
