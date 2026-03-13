@@ -1,10 +1,22 @@
-const Blog=require('../models/blogs')
-const mongoose=require('mongoose');
+const Blog=require('../models/blogs');
+const Like=require('../models/likes');
+const Bookmark=require('../models/bookmarks');
+const State=require('../models/states')
 const cloudinary=require('../config/cloudinary')
 const streamifier=require('streamifier');
+const {nanoid}=require('nanoid');
 const postBlog=async (req,res)=>{
     try{
     const { title, content, category } = req.body;
+    const createSlug=(title)=>{
+      return title
+       .toLowerCase()
+       .trim()
+       .replace(/[^a-z0-9\s-]/g, "")
+       .replace(/\s+/g, "-")
+       .replace(/-+/g, "-");
+    }
+    let slug=`${createSlug(title)}-${nanoid(6)}`;
     const existblog= await Blog.findOne({
          title: req.body.title,
          author: req.result._id,
@@ -12,7 +24,7 @@ const postBlog=async (req,res)=>{
     if(existblog){
         return res.status(409).json({message:"Blog is Already Exist"})
     }
-     if(!req.file){
+     if(!req.file.mimetype.startsWith("image/")){
       return res.status(400).json({
         message:"Image is Required"
       })
@@ -38,14 +50,35 @@ const postBlog=async (req,res)=>{
      }
 
     const uploadResult=await uploadFromBuffer();
-     const parseContent=JSON.parse(content)
-     console.log(parseContent);
+     let parseContent;
+     try{
+        parseContent = JSON.parse(content);
+     }
+     catch(err){
+          return res.status(400).json({
+          message: "Invalid JSON format",
+         });
+     }
+     
      if (!parseContent || !Array.isArray(parseContent.ops)) {
      return res.status(400).json({ message: "Invalid content format" });
+    }
+    const getPlainText=(delta)=>{
+       if(!delta?.ops) return ""
+       return delta.ops
+       .map(op => typeof op.insert === "string" ? op.insert : "")
+       .join("")
+       .replace(/\n/g, " ")
+       .trim();  
    }
+   
+   const contentText=getPlainText(parseContent);
+  
     const createdBlog=await Blog.create({
      title,
-     content,
+     slug,
+     content:parseContent,
+     contentText,
      category,
      image: {
         public_id: uploadResult.public_id,
@@ -53,12 +86,16 @@ const postBlog=async (req,res)=>{
       },
      author:req.result._id,
     });
+    
     res.status(201).json({message:"the blog is Successfuly Created",
         data:createdBlog,
     });
     }
     catch(error){
        console.error(error);
+        if (uploadResult?.public_id) {
+        await cloudinary.uploader.destroy(uploadResult.public_id);
+         }
        res.status(500).json({message:"Internal Server Error"})
     }
     
@@ -66,10 +103,8 @@ const postBlog=async (req,res)=>{
 
 const editBlog=async(req,res)=>{
   try{
-      const {id}=req.params;
-      if (!mongoose.Types.ObjectId.isValid(id)) {
-       return res.status(400).json({ message: "Invalid blog ID" });
-      }
+      const {slug}=req.params;
+     
       if (Object.keys(req.body).length === 0 && !req.file) {
        return res.status(400).json({ message: "No fields to update" });
       }
@@ -114,7 +149,7 @@ const editBlog=async(req,res)=>{
        }
       }
        const updatedBlog=await Blog.findOneAndUpdate({
-          _id:id,
+          slug:slug,
           author:req.result._id,
          },
           {
@@ -148,12 +183,10 @@ const editBlog=async(req,res)=>{
 
 const deleteBlog=async(req,res)=>{
     try{
-    const {id}=req.params;
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-       return res.status(400).json({ message: "Invalid blog ID" });
-    }
+    const {slug}=req.params;
+   
     const deletedblog=await Blog.findOneAndDelete({
-        _id:id,
+        slug:slug,
         author:req.result._id,
     })
 
@@ -177,9 +210,9 @@ const deleteBlog=async(req,res)=>{
 
 const getAllBlogs=async(req,res)=>{
   try{
-        const page=Number(req.query.page) || 1;
+        const userId=req.result?.id;
         const limit=Number(req.query.limit) || 10;
-        const skip=(page-1)*limit;
+        const cursor=req.query.cursor;
         const {search,category}=req.query;
         const filter={};
         if(search){
@@ -189,15 +222,37 @@ const getAllBlogs=async(req,res)=>{
             filter.category=category;
         }
         
+        if(cursor){
+          filter._id={ $lt: new mongoose.Types.ObjectId(cursor) };
+        }
         
-      const totalBlogs=await Blog.countDocuments(filter);
-
+  
       const blogs = await Blog.find(filter)
       .populate("author", "name") // populate author info
-      .sort({ createdAt: -1 })          // newest first
-      .skip(skip)
-      .limit(limit);
-
+      .sort({ _id: -1 })          // newest first
+      .limit(limit+1);
+      const hasMore = blogs.length > limit;
+      if(hasMore){
+         blogs.pop();
+      }
+      const nextCursor=blogs.length>0 ? blogs[blogs.length - 1]._id : null;
+      const blogIds = blogs.map(blog => blog._id);
+       let likedSet=new Set();
+       let bookmarkedSet=new Set();
+       if(userId){
+           const likes = await Like.find({
+                               user:userId,
+                               blog:{ $in:blogIds }
+                               }).select("blog")
+           const bookmarks = await  Bookmark.find({
+                                     user:userId,
+                                     blog:{ $in:blogIds }
+                                    }).select("blog")
+           likedSet = new Set(likes.map((l) => l.blog.toString()));
+           bookmarkedSet = new Set(bookmarks.map((b) => b.blog.toString()));
+       }
+       const state = await State.findOne();
+       const totalBlogs = state.blogsCount;
        const parsedBlogs = blogs.map(blog => {
        const blogObj = blog.toObject();
         if (typeof blogObj.content === "string") {
@@ -207,16 +262,17 @@ const getAllBlogs=async(req,res)=>{
             blogObj.content = {};
          }
       }
-
-  return blogObj;
+          blogObj.isLiked = likedSet.has(blog._id.toString());
+          blogObj.isBookmarked = bookmarkedSet.has(blog._id.toString());
+      return blogObj;
       });
       //response send
      res.status(200).json({
       success: true,
-      page,
       limit,
       totalBlogs,
-      totalPages: Math.ceil(totalBlogs / limit),
+      hasMore,
+      nextCursor,
       data: parsedBlogs,
     });
      }
@@ -232,12 +288,9 @@ const getAllBlogs=async(req,res)=>{
 
 const getBlog=async(req,res)=>{
     try{
-       const {id}=req.params;
-       //check id is it correct or not to prevent database call
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ message: "Invalid blog ID" });
-    }
-       const blog=await Blog.findById(id).populate("author","name").lean();
+       const {slug}=req.params;
+       
+       const blog=await Blog.findOne({slug:slug}).populate("author","name").lean();
         if (!blog) {
        return res.status(404).json({ message: "Blog not found" });
        }

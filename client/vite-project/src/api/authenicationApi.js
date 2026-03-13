@@ -6,10 +6,17 @@ export const login=(credentials)=>{
 export const signup=(credentials)=>{
  return axiosClient.post('/api/user/signup',credentials);
 }
+
 export const logout=()=>{
  return axiosClient.post('/api/user/logout');
 }
 
 export const checkAuth=()=>{
-   return axiosClient.post('/api/user/checkAuth')
+   return axiosClient.get('/api/user/check-auth')
 }
+
+
+export const meBookmarks=()=>{
+   return axiosClient.get('/api/user/me/bookmarks');
+}
+

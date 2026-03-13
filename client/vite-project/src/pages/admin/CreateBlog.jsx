@@ -82,21 +82,39 @@ export default function CreateBlog(){
                     )}
                 </div>
                 {/* category */}
+                {/* category */}
                 <div>
-                     <label className="block mb-1 font-medium">Category</label>
-                     <input
-                    type="text"
+                  <label className="block mb-1 font-medium">Category</label>
+
+                   <select
                     {...register("category")}
                     className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Enter category"
-                    >
-                    </input>
-                    {errors.category &&(
-                       <p className="text-red-500 text-sm mt-1">
-                         {errors.category.message}
-                       </p>
-                    )}
-                </div>
+                   >
+                     <option value="">Select Category</option>
+                     <option value="Skincare Routine">Skincare Routine</option>
+                     <option value="Acne Care">Acne Care</option>
+                     <option value="Anti Aging">Anti Aging</option>
+                     <option value="Dry Skin">Dry Skin</option>
+                     <option value="Oily Skin">Oily Skin</option>
+                     <option value="Sensitive Skin">Sensitive Skin</option>
+                     <option value="Combination Skin">Combination Skin</option>
+                     <option value="Ingredients Guide">Ingredients Guide</option>
+                     <option value="Product Reviews">Product Reviews</option>
+                     <option value="DIY Skincare">DIY Skincare</option>
+                    <option value="Sun Protection">Sun Protection</option>
+                    <option value="Hyperpigmentation">Hyperpigmentation</option>
+                    <option value="Dermatologist Advice">Dermatologist Advice</option>
+                    <option value="Men Skincare">Men Skincare</option>
+                    <option value="Beginner Guide">Beginner Guide</option>
+                </select>
+                 
+                 {errors.category && (
+                 <p className="text-red-500 text-sm mt-1">
+                 {errors.category.message}
+                 </p>
+                )}
+  
+                 </div>
                 {/* image */}
                  <div>
                      <label className="block mb-1 font-medium">Upload Image</label>

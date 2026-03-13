@@ -7,7 +7,7 @@ import "react-quill-new/dist/quill.snow.css";
 import ReactQuill from 'react-quill-new'
 import {z} from 'zod';
 function EditBlog(){
-       const {id}=useParams();
+       const {slug}=useParams();
        const navigate=useNavigate()
        const [loading,setLoading]=useState(false);
        const [error,setError]=useState("");
@@ -55,7 +55,7 @@ function EditBlog(){
            const fetchBlogForEdit=async()=>{
               try{
                   setLoading(true);
-                  const res=await getBlog(id); 
+                  const res=await getBlog(slug); 
                   const blog=res.data.data;
                   reset({
                      title:blog.title,
@@ -71,7 +71,7 @@ function EditBlog(){
               }
            }
            fetchBlogForEdit()
-       },[id,reset]);
+       },[slug,reset]);
        const modules = useMemo(() => ({
              toolbar: [
              [{ header: [1, 2, false] }],

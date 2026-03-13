@@ -10,12 +10,13 @@ const cors=require('cors');
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: "http://localhost:5173", // frontend URL
-  credentials: true,               // if sending cookies
+  origin: "http://localhost:5173", 
+  credentials: true,               
 }));
 
 app.use('/api/blogs',blogRouter);
 app.use('/api/user',authRouter);
+
 const inializeConnection=async()=>{
     await Promise.all([main(),redisClient.connect()])
     console.log("DB is connected");

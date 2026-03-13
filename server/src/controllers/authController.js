@@ -11,18 +11,23 @@ const signup=async(req,res)=>{
      if (existingUser) {
       return res.status(409).json({ message: "Email already registered" });
     }
-    const hashPassword=await bcrypt.hash(password,10);
+   const hashPassword=await bcrypt.hash(password,10);
+    const role=req.result && req.result.role==="admin"?"admin":"user";
+   
    const newUser= await User.create({
         name,
         emailId,
-        password:hashPassword
+        password:hashPassword,
+        role
     })
     res.status(201).json({message:"User is created successfully",
+        data:{
         user:{
            id:newUser._id,
            name:newUser.name,
-        
+           role:newUser.role,
         }
+     }
     })
 }
 catch(error){
@@ -38,9 +43,9 @@ const login=async(req,res)=>{
       if(!checkUser){
         return res.status(404).json({message:"User Does Not Exist"})
       }
-      if(checkUser.role!=='admin'){
-        return res.status(403).json({message:"Access Denied"})
-      }
+    //   if(checkUser.role!=='admin'){
+    //     return res.status(403).json({message:"Access Denied"})
+    //   }
       
      const isMatch = await bcrypt.compare(password, checkUser.password);
      if (!isMatch) {
@@ -67,12 +72,14 @@ const login=async(req,res)=>{
      })
       return res.status(200).json({
       message: "Login successful",
+      data:{
       user: {
         id: checkUser._id,
         name: checkUser.name,
         email: checkUser.emailId,
         role: checkUser.role,
       },
+     }
     });
    }
    catch(error){
@@ -83,7 +90,7 @@ const login=async(req,res)=>{
 const logout=async(req,res)=>{
     try{
      const token=req.cookies.token;
-      const payload=jwt.decode(token);
+      const payload=jwt.verify(token,process.env.JWT_SECRET);
        let expireTime=payload.exp-Math.floor(Date.now()/1000)
        if(expireTime<1){
         expireTime=1;

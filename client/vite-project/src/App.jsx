@@ -10,23 +10,34 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import Homepage from './pages/homePage';
 import HomePageLayout from './layouts/HomePageLayout'
 import BlogPage from './pages/blogPage';
+import AdminCommentSection from './components/admin/AdminCommentSection'
+import ProfilePage from './pages/profilePage'
+import { checkAuth } from './features/authSlice'
+// import { fetchAllBlogs } from './features/blogsSlice'
+import { useDispatch } from 'react-redux'
+import {useEffect} from 'react';
 function App() {
-  
+  const dispatch=useDispatch();
+    useEffect(() => {
+      dispatch(checkAuth());
+     }, [dispatch])
   return (
     <Routes>
         <Route element={<HomePageLayout/>}>
         <Route path='/' element={<Homepage></Homepage>}></Route>
-        <Route path='/blog/:id' element={<BlogPage/>}></Route>
+        <Route path='/blog/:slug' element={<BlogPage/>}></Route>
+         <Route path='/profile' element={<ProfilePage/>}></Route>
          </Route>
-         <Route element={<ProtectedRoute/>}>
-          <Route path="/admin" element={<AdminLayout />}>  
-           <Route path="/admin/create" element={<CreateBlog />} />
-            <Route path="/admin/blogs/edit/:id" element={<EditBlog/>} />
-          <Route index element={<><DashBoard /> <BlogsAdminPage/></>} />
-          <Route path="dashboard" element={<DashBoard/>}></Route>
-          <Route path="blogs" element={<BlogsAdminPage />} />  
-          </Route>
-         </Route>
+         <Route element={<ProtectedRoute />}>
+         <Route path="/admin" element={<AdminLayout />}>  
+        <Route index element={<DashBoard />} />
+        <Route path="dashboard" element={<DashBoard />} />
+        <Route path="blogs" element={<BlogsAdminPage />} />
+        <Route path="blogs/create" element={<CreateBlog />} />
+        <Route path="blogs/edit/:slug" element={<EditBlog />} />
+        <Route path="blogs/comments/:slug" element={<AdminCommentSection />} />
+       </Route>
+       </Route>
         <Route path='/signup' element={<SignupPage></SignupPage>}></Route>
         <Route path='/signin' element={<LoginPage></LoginPage>}></Route>
     </Routes>
