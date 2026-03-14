@@ -11,6 +11,7 @@ const blogSchema = new mongoose.Schema(
     slug:{
      type:String,
      required:true,
+     index:true,
      unique:true,
     },
     content: {
@@ -46,14 +47,18 @@ const blogSchema = new mongoose.Schema(
        url: {type:String,required:true},
        public_id: {type:String,required:true}
       },
-        likesCount:{
+       likesCount:{
         type:Number,
         default:0,
     },
-    commentsCount:{
+     commentsCount:{
         type:Number,
         default:0,
     },
+    bookmarksCount:{
+      type:Number,
+      default:0
+     },
     author: { type: mongoose.Schema.Types.ObjectId, ref: 'user',required:true },
   },
   {
@@ -61,13 +66,13 @@ const blogSchema = new mongoose.Schema(
   }
 );
 
-blogSchema.index({
-   title: "text",
-   contentText: "text",
-})
+blogSchema.index(
+  { title: "text", contentText: "text" },
+  { weights: { title: 5, contentText: 1 } }
+);
 
 blogSchema.post('save',async function(doc){
- if(doc){
+ if(this.isNew){
     await State.updateOne(
       {},
       { $inc: { blogsCount: 1 } },
@@ -77,6 +82,7 @@ blogSchema.post('save',async function(doc){
 })
 
 blogSchema.post("findOneAndDelete", async function (doc) {
+  if(!doc) return;
   if (doc) {
     await State.updateOne(
       {},

@@ -1,36 +1,45 @@
 const Comment=require('../models/comment');
+const mongoose = require("mongoose");
 const Blog=require('../models/blogs');
-
+const State=require('../models/states')
 const createComment=async(req,res)=>{
+      const session=await mongoose.startSession();
+      session.startTransaction();
     try{
         const userId=req.result?.id;
         if(!userId){
-            return res.status(404).json({message:"UnAuthorized"});
+            return res.status(401).json({message:"UnAuthorized"});
         }
         const {slug}=req.params;
         const {comment}=req.body;
 
         if(!comment || comment.trim()===''){
-            return res.status(404).json({message:'Comment Required'})
+            return res.status(400).json({message:'Comment Required'})
         }
-        const blog=await Blog.findOne({slug});
+        const blog=await Blog.findOne({slug}).session(session);;
         if(!blog){
-            return res.status().json({message:'Blog Not Found'})
+            await session.abortTransaction();
+            return res.status(404).json({message:'Blog Not Found'})
         }
-        await Comment.create({
+        await Comment.create([{
             blog:blog._id,
             user:userId,
             comment
-        })
+        }],{session})
 
         await Blog.updateOne(
           { _id: blog._id },
-          { $inc: { commentsCount: 1 } }
+          { $inc: { commentsCount: 1 } },
+          {session}
          );
-
+         await State.updateOne({},{$inc:{totalCommentsCount:1}},{upsert:true,session})
+         await session.commitTransaction();
+         session.endSession();
         return res.status(201).json({ message: "Comment added" });
     }
     catch(error){
+          await session.abortTransaction();
+          session.endSession();
           console.log(error)
           return res.status(500).json({ message: "Server error" });
     }
@@ -74,26 +83,36 @@ const  getComments=async(req,res)=>{
 }
 
 const deleteComment=async(req,res)=>{
+      const session=await mongoose.startSession();
+      session.startTransaction();
     try{
        const userId=req.result.id;
        const {id}=req.params;
        const comment=await Comment.findById(id);
        if(!comment){
+        session.abortTransaction()
         return res.status(404).json({message:"Comment Not found"})
        }
        
-       if(comment.user.toString()!==userId || req.result.role==='admin'){
+       if(comment.user.toString()!==userId && req.result.role==='admin'){
+        await session.abortTransaction();
         return res.status(403).json({message:"Forbidden"})
        }
-       await comment.deleteOne();
+       await comment.deleteOne({_id:id}).session(session);
        await Blog.updateOne(
         {_id:comment.blog},
-        { $inc: { commentsCount: -1 } }
+        { $inc: { commentsCount: -1 } },
+        {session}
        )
+        await State.updateOne({},{$inc:{totalCommentsCount:-1}},{upsert:true,session})
+        await session.commitTransaction();
+        session.endSession();
        return res.status(200).json({ message: "Deleted" });
 
     }
     catch(error){
+        await session.abortTransaction();
+        session.endSession();
        return res.status(500).json({ message: "Server error" });
     }
 }
