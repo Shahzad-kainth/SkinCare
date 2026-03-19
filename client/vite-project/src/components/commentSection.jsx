@@ -25,7 +25,7 @@ function CommentSection({
 
       {/* Comment Header */}
       <h2 className="text-2xl font-semibold mb-6 text-[#2E2E2E]">
-        Comments ({comments.length})
+        Comments ({comments?.length})
       </h2>
 
       {/* Add Comment */}
@@ -54,9 +54,9 @@ function CommentSection({
       {/* Comments List */}
       <div className="space-y-6">
 
-        {comments.map((comment) => (
+        {comments?.map((comment,index) => (
           <div
-            key={comment._id}
+            key={comment?._id ||`temp-${index}`}
             className="border p-4 rounded-xl bg-white shadow-sm"
           >
 
@@ -65,16 +65,16 @@ function CommentSection({
 
               <div className="flex flex-col">
                 <span className="font-medium text-sm text-[#2E2E2E]">
-                  {comment.user?.name || "Anonymous"}
+                  {comment?.user?.name || "Anonymous"}
                 </span>
 
                 <span className="text-xs text-gray-400">
-                  {new Date(comment.createdAt).toLocaleDateString()}
+                  {new Date(comment?.createdAt).toLocaleDateString()}
                 </span>
               </div>
 
               {/* Delete Button */}
-              {!comment.isPending && (
+              {!comment?.isPending && (
                 <button
                   onClick={() => removeComment(comment._id)}
                   className="text-gray-400 hover:text-red-500 transition"
@@ -87,11 +87,11 @@ function CommentSection({
 
             {/* Comment Text */}
             <p className="text-gray-700 text-sm leading-relaxed">
-              {comment.text || comment.comment}
+              {comment?.text || comment?.comment}
             </p>
 
             {/* Pending indicator */}
-            {comment.isPending && (
+            {comment?.isPending && (
               <p className="text-xs text-gray-400 mt-2">
                 Posting...
               </p>

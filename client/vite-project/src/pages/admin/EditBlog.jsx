@@ -88,11 +88,11 @@ function EditBlog(){
                 formData.append("title", data.title);
                 formData.append("content", JSON.stringify(data.content));
                 formData.append("category", data.category);
-                if (data.image && data.image.length >= 0) {
+                if (data.image && data.image.length > 0) {
                  formData.append("image", data.image[0]);
                  }
 
-                 await editBlog(id,formData);
+                 await editBlog(slug,formData);
                  alert("Blog Updated Succefuly")
                    navigate('/admin')
               }

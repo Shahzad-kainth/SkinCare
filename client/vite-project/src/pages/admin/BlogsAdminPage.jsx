@@ -1,6 +1,6 @@
 import BlogsAdminTable from '../../components/admin/BlogsAdminTable';
 import {useEffect} from 'react';
-import { fetchAllBlogs,resetBlogs } from '../../features/blogsSlice';
+import { fetchAllBlogs,resetBlogs ,removeBlog} from '../../Slices/blogsSlice';
 import { useSelector,useDispatch } from 'react-redux';
 const BlogsAdminPage= () => {
        const { blogs, loading, deleteLoading, search, nextCursor, hasMore } = useSelector((state) => state.blogs);

@@ -12,7 +12,7 @@ const stateSchema=new mongoose.Schema({
         type:Number,
         default:0,
     },
-    totalUsers:{
+    totalUsersCount:{
         type:Number,
         default:0,
     },

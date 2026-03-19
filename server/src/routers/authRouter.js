@@ -24,4 +24,5 @@ authRouter.get('/check-auth', verifyToken, checkAuth);
 authRouter.post('/admin/signup', verifyToken, requireAdmin, signup);
 
 authRouter.get('/me/bookmarks',verifyToken,getUserBookmarks)
+
 module.exports = authRouter;

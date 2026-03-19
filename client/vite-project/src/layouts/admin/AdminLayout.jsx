@@ -4,28 +4,27 @@ import { Outlet } from 'react-router';
 
 function AdminLayout() {
   return (
-    <div className="min-h-screen flex bg-emerald-50">
+    <div className="min-h-screen flex bg-stone-50">
 
-      
-      <div className="w-64 fixed top-0 left-0 h-screen">
+      {/* Sidebar — hidden on mobile, fixed on desktop */}
+      <div className="hidden md:block w-64 fixed top-0 left-0 h-screen z-20">
         <AdminSideBar />
       </div>
 
-      {/* Main content with margin-left equal to sidebar width */}
-      <div className="flex-1 flex flex-col ml-64 min-h-screen">
-
-        {/* Header stays on top */}
+      {/* Main content */}
+      <div className="flex-1 flex flex-col md:ml-64 min-h-screen">
+        {/* Header */}
         <div className="sticky top-0 z-10">
           <AdminHeader />
         </div>
-
-        {/* Main scrollable content */}
-        <main className="flex-1 overflow-auto p-6 md:p-8">
-          <div className="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 min-h-[80vh]">
+        {/* Scrollable content */}
+        <main className="flex-1 overflow-auto p-4 md:p-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 md:p-6 min-h-[80vh]">
             <Outlet />
           </div>
         </main>
       </div>
+
     </div>
   );
 }

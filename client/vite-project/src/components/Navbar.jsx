@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
+import  { useState, useRef, useEffect } from "react";
 import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser } from "../features/authSlice";
+import { logoutUser } from "../Slices/authSlice";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -27,29 +27,29 @@ const Navbar = () => {
   };
 
   return (
-    <header className="bg-[#F8F6F2] border-b border-[#E5E7EB] sticky top-0 z-50">
+    <header className="bg-stone-50 border-b border-gray-200 sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center py-4 px-6">
         {/* Logo */}
-        <Link to="/" className="text-2xl font-semibold text-[#4F7C73] tracking-wide">
+        <Link to="/" className="text-2xl font-semibold text-teal-700 tracking-wide">
           GlowBlog
         </Link>
 
         {/* Desktop Menu */}
-        <nav className="hidden md:flex items-center space-x-8 font-medium text-[#2E2E2E]">
-          <Link to="/" className="hover:text-[#7FAE9E] transition duration-300">Home</Link>
-          {isAuthenticated && user.role==='admin' && (
-            <Link to="/admin" className="hover:text-[#7FAE9E] transition duration-300">Admin Panel</Link>
-          )}     
-          <Link to="/contact" className="hover:text-[#7FAE9E] transition duration-300">Contact</Link>
+        <nav className="hidden md:flex items-center space-x-8 font-medium text-neutral-800">
+          <Link to="/" className="hover:text-teal-500 transition duration-300">Home</Link>
+          {isAuthenticated && user.role === 'admin' && (
+            <Link to="/admin" className="hover:text-teal-500 transition duration-300">Admin Panel</Link>
+          )}
+          <Link to="/contact" className="hover:text-teal-500 transition duration-300">Contact</Link>
 
           {/* User Profile / Sign In */}
           {user ? (
             <div className="relative" ref={profileRef}>
               <button
                 onClick={() => setProfileOpen(!profileOpen)}
-                className="flex items-center gap-2 bg-[#7FAE9E] text-white px-4 py-2 rounded-lg hover:bg-[#4F7C73] transition"
+                className="flex items-center gap-2 bg-teal-400 text-white px-4 py-2 rounded-xl hover:bg-teal-600 transition duration-300"
               >
-                <div className="w-6 h-6 bg-white text-[#7FAE9E] rounded-full flex items-center justify-center font-bold text-sm">
+                <div className="w-6 h-6 bg-white text-teal-500 rounded-full flex items-center justify-center font-bold text-sm">
                   {user.name[0].toUpperCase()}
                 </div>
                 <span>{user.name}</span>
@@ -57,17 +57,17 @@ const Navbar = () => {
 
               {/* Dropdown */}
               {profileOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-lg rounded-lg py-2 z-50">
+                <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 shadow-md rounded-xl py-2 z-50">
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-gray-700 hover:bg-emerald-50"
+                    className="block px-4 py-2 text-sm text-gray-600 hover:bg-teal-50 hover:text-teal-700 transition duration-200"
                     onClick={() => setProfileOpen(false)}
                   >
                     Profile
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2 text-gray-700 hover:bg-rose-50"
+                    className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-rose-50 hover:text-rose-500 transition duration-200"
                   >
                     Logout
                   </button>
@@ -77,7 +77,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/signin"
-              className="bg-[#7FAE9E] text-white px-5 py-2 rounded-lg hover:bg-[#4F7C73] transition duration-300"
+              className="bg-teal-400 text-white px-5 py-2 rounded-xl hover:bg-teal-600 transition duration-300"
             >
               Sign In
             </Link>
@@ -86,7 +86,7 @@ const Navbar = () => {
 
         {/* Mobile Hamburger */}
         <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)} className="text-[#2E2E2E]">
+          <button onClick={() => setIsOpen(!isOpen)} className="text-neutral-800">
             {isOpen ? (
               <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
@@ -102,19 +102,18 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden bg-white border-t border-[#E5E7EB] px-6 py-6 space-y-4 shadow-sm">
-          <Link to="/" className="block text-[#2E2E2E] hover:text-[#7FAE9E] transition">Home</Link>
-          
-          <Link to="/contact" className="block text-[#2E2E2E] hover:text-[#7FAE9E] transition">Contact</Link>
+        <div className="md:hidden bg-white border-t border-gray-200 px-6 py-6 space-y-4 shadow-sm">
+          <Link to="/" className="block text-neutral-800 hover:text-teal-500 transition">Home</Link>
+          <Link to="/contact" className="block text-neutral-800 hover:text-teal-500 transition">Contact</Link>
 
           {user ? (
             <div className="space-y-2">
-              <Link to="/profile" className="block px-4 py-2 bg-emerald-100 text-gray-700 rounded-lg">
+              <Link to="/profile" className="block px-4 py-2 bg-teal-50 text-teal-700 rounded-xl text-sm font-medium">
                 Profile
               </Link>
               <button
                 onClick={handleLogout}
-                className="block w-full text-left px-4 py-2 bg-rose-100 text-gray-700 rounded-lg"
+                className="block w-full text-left px-4 py-2 bg-rose-50 text-rose-500 rounded-xl text-sm font-medium"
               >
                 Logout
               </button>
@@ -122,7 +121,7 @@ const Navbar = () => {
           ) : (
             <Link
               to="/signin"
-              className="inline-block bg-[#7FAE9E] text-white px-5 py-2 rounded-lg hover:bg-[#4F7C73] transition"
+              className="inline-block bg-teal-400 text-white px-5 py-2 rounded-xl hover:bg-teal-600 transition"
             >
               Sign In
             </Link>

@@ -10,12 +10,14 @@ import ProtectedRoute from './routes/ProtectedRoute'
 import Homepage from './pages/homePage';
 import HomePageLayout from './layouts/HomePageLayout'
 import BlogPage from './pages/blogPage';
+import BookMarkPage from './pages/bookmarkPage'
 import AdminCommentSection from './components/admin/AdminCommentSection'
 import ProfilePage from './pages/profilePage'
-import { checkAuth } from './features/authSlice'
+import { checkAuth } from './Slices/authSlice'
 // import { fetchAllBlogs } from './features/blogsSlice'
 import { useDispatch } from 'react-redux'
 import {useEffect} from 'react';
+import ContactPage from './pages/contactPage'
 function App() {
   const dispatch=useDispatch();
     useEffect(() => {
@@ -27,6 +29,8 @@ function App() {
         <Route path='/' element={<Homepage></Homepage>}></Route>
         <Route path='/blog/:slug' element={<BlogPage/>}></Route>
          <Route path='/profile' element={<ProfilePage/>}></Route>
+         <Route path='/bookmarks' element={<BookMarkPage/>}></Route>
+         <Route path='/contact' element={<ContactPage/>}></Route>
          </Route>
          <Route element={<ProtectedRoute />}>
          <Route path="/admin" element={<AdminLayout />}>  

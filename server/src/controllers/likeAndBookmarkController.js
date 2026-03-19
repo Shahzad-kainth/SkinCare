@@ -3,6 +3,7 @@ const withTransaction = require("../utilis/withTransaction");
 const Blog = require("../models/blogs");
 const Bookmark = require("../models/bookmarks");
 const State = require("../models/states");
+const { Types } = require("mongoose");
 
 const handleAction = async ({
   req,
@@ -18,12 +19,12 @@ const handleAction = async ({
       return res.status(401).json({ message: "Unauthorized" });
     }
     const { slug } = req.params;
-   const actionPerformed= await withTransaction(async (session) => {
+    const actionPerformed = await withTransaction(async (session) => {
       const blog = await Blog.findOne({ slug }).select("_id").session(session);
       if (!blog) {
         throw { status: 404, message: "Blog Not Found" };
       }
-      
+
       if (actionType === "like" || actionType === "addBookmark") {
         const result = await model.updateOne(
           { user: userId, blog: blog._id },
@@ -59,20 +60,19 @@ const handleAction = async ({
             { $inc: { [stateField]: -1 } },
             { upsert: true, session },
           );
-          return  true;
+          return true;
         }
       }
-       return false;
+      return false;
     });
 
-     return res.status(200).json({
-        success:true,
-        data:{
-          actionPerformed,
-        }
-       })
-  } 
-  catch (error) {
+    return res.status(200).json({
+      success: true,
+      data: {
+        actionPerformed,
+      },
+    });
+  } catch (error) {
     console.error(error);
     if (error.status) {
       return res.status(error.status).json({
@@ -88,42 +88,46 @@ const handleAction = async ({
   }
 };
 
-const likeBlog = (req, res) => handleAction({
-  req, 
-  res, 
-  model: Like, 
-  counterField: "likesCount", 
-  stateField: "totalLikesCount", 
-  actionType: "like"
-});
+const likeBlog = (req, res) =>
+  handleAction({
+    req,
+    res,
+    model: Like,
+    counterField: "likesCount",
+    stateField: "totalLikesCount",
+    actionType: "like",
+  });
 
-const unlikeBlog = (req, res) => handleAction({
-  req, 
-  res, 
-  model: Like, 
-  counterField: "likesCount", 
-  stateField: "totalLikesCount", 
-  actionType: "unlike"
-});
+const unlikeBlog = (req, res) =>
+  handleAction({
+    req,
+    res,
+    model: Like,
+    counterField: "likesCount",
+    stateField: "totalLikesCount",
+    actionType: "unlike",
+  });
 
 // Bookmark / Remove Bookmark
-const addBookmark = (req, res) => handleAction({
-  req, 
-  res, 
-  model: Bookmark, 
-  counterField: "bookmarksCount", 
-  stateField: "totalBookmarksCount", 
-  actionType: "addBookmark"
-});
+const addBookmark = (req, res) =>
+  handleAction({
+    req,
+    res,
+    model: Bookmark,
+    counterField: "bookmarksCount",
+    stateField: "totalBookmarksCount",
+    actionType: "addBookmark",
+  });
 
-const removeBookmark = (req, res) => handleAction({
-  req, 
-  res, 
-  model: Bookmark, 
-  counterField: "bookmarksCount", 
-  stateField: "totalBookmarksCount", 
-  actionType: "removeBookmark"
-});
+const removeBookmark = (req, res) =>
+  handleAction({
+    req,
+    res,
+    model: Bookmark,
+    counterField: "bookmarksCount",
+    stateField: "totalBookmarksCount",
+    actionType: "removeBookmark",
+  });
 
 const getUserBookmarks = async (req, res) => {
   try {
@@ -131,18 +135,34 @@ const getUserBookmarks = async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
+    const { cursor } = req.query;
 
-    const page = parseInt(req.query.page) || 1;
-    const limit = 10;
-    const skip = (page - 1) * limit;
-
-    const bookmarks = await Bookmark.find({ user: userId })
-      .populate("blog", "title slug likesCount")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit);
-
-    return res.status(200).json(bookmarks);
+    const query = { user: userId};
+     if ( cursor && ObjectId.isValid(cursor)) {
+         query._id = { $lt: new ObjectId(cursor) };
+        }
+    const limit = Math.min(Number(req.query.limit) || 6, 8);
+    const bookmarks = await Bookmark.find(query)
+      .populate({
+        path: "blog",
+        select: "title slug contentText likesCount",
+        match: { _id: { $exists: true } },
+      })
+      .sort({ _id: -1 })
+      .limit(limit + 1)
+      .lean();
+    const hasMore = bookmarks.length > limit;
+    if (hasMore) {
+      bookmarks.pop();
+    }
+    const nextCursor =
+      bookmarks.length > 0 ? bookmarks[bookmarks.length - 1]._id : null;
+    return res.status(200).json({
+      success: true,
+      data: bookmarks,
+      nextCursor,
+      hasMore,
+    });
   } catch (err) {
     console.error("Get Bookmarks Error:", err);
     return res.status(500).json({ message: "Internal server error" });
@@ -156,36 +176,3 @@ module.exports = {
   removeBookmark,
   getUserBookmarks,
 };
-
-// const getLikes = async (req, res) => {
-//   try {
-//     const userId = req.result?.id;
-//     const { slug } = req.params;
-//     console.log(userId);
-//     const blog = await Blog.findOne({ slug })
-//       .select("_id likesCount");
-
-//     if (!blog) {
-//       return res.status(404).json({ message: "Blog not found" });
-//     }
-
-//     let isLiked = false;
-
-//     if (userId) {
-//       const likeExists = await Like.exists({
-//         user: userId,
-//         blog: blog._id,
-//       });
-//       isLiked = !!likeExists;
-//     }
-
-//     return res.status(200).json({
-//       likesCount: blog.likesCount,
-//       isLiked,
-//     });
-
-//   } catch (err) {
-//     console.error("Get Likes Error:", err);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };

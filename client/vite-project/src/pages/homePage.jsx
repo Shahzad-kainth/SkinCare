@@ -1,6 +1,6 @@
 import  { useEffect, useState } from "react";
 import BlogCard from "../components/blogHomepageCard";
-import { fetchAllBlogs,resetBlogs,setSearch } from "../features/blogsSlice";
+import { fetchAllBlogs,resetBlogs,setSearch } from "../Slices/blogsSlice";
 import { useSelector,useDispatch } from "react-redux";
 import { FiSearch } from "react-icons/fi"; 
 const HomePage = () => {
@@ -55,7 +55,7 @@ const HomePage = () => {
         <button
           onClick={loadMore}
           disabled={loading}
-          className="px-6 py-3 rounded-full border border-emerald-200 bg-white hover:bg-emerald-200 disabled:opacity-50 transition"
+          className="px-6 py-3 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-200 disabled:opacity-50 transition"
         >
           {loading ? "Loading..." : "Load More"}
         </button>

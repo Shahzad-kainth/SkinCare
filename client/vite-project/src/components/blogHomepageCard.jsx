@@ -19,7 +19,7 @@ const BlogCard = ({ blog }) => {
   return (
     <Link
       to={`/blog/${blog.slug}`}
-      className="group bg-white rounded-2xl border border-[#E5E7EB] overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col"
+      className="group bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col"
     >
       {/* Image */}
       {blog.image && (
@@ -35,7 +35,7 @@ const BlogCard = ({ blog }) => {
 
           {/* Category Badge */}
           {blog.category && (
-            <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-[#4F7C73] text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
+            <span className="absolute top-4 left-4 bg-white/90 backdrop-blur text-teal-700 text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
               {blog.category}
             </span>
           )}
@@ -49,10 +49,10 @@ const BlogCard = ({ blog }) => {
               <Heart
                 size={15}
                 strokeWidth={2}
-                className={liked ? "fill-rose-500 stroke-rose-500" : "stroke-gray-500"}
+                className={liked ? "fill-rose-400 stroke-rose-400" : "stroke-gray-400"}
               />
               {likeCount > 0 && (
-                <span className={`text-xs font-medium ${liked ? "text-rose-500" : "text-gray-500"}`}>
+                <span className={`text-xs font-medium ${liked ? "text-rose-400" : "text-gray-400"}`}>
                   {likeCount}
                 </span>
               )}
@@ -65,29 +65,32 @@ const BlogCard = ({ blog }) => {
               <Bookmark
                 size={15}
                 strokeWidth={2}
-                className={bookmarked ? "fill-[#4F7C73] stroke-[#4F7C73]" : "stroke-gray-500"}
+                className={bookmarked ? "fill-teal-500 stroke-teal-500" : "stroke-gray-400"}
               />
             </button>
           </div>
         </div>
       )}
 
-      <div className="p-6 flex flex-col flex-grow">
+      {/* Card Body */}
+      <div className="p-5 flex flex-col flex-grow">
+
         {/* Title */}
-        <h2 className="text-xl font-semibold text-[#2E2E2E] mb-3 group-hover:text-[#7FAE9E] transition line-clamp-2">
+        <h2 className="text-lg font-semibold text-neutral-800 mb-2 group-hover:text-teal-500 transition duration-200 line-clamp-2">
           {blog.title}
         </h2>
 
         {/* Description */}
-        <p className="text-[#6B7280] text-sm mb-6 line-clamp-3 leading-relaxed">
+        <p className="text-gray-500 text-sm mb-5 line-clamp-3 leading-relaxed">
           {getPlainText(blog.content)}
         </p>
 
         {/* Author + Date */}
-        <div className="mt-auto flex justify-between items-center text-sm text-[#6B7280] border-t border-[#F1F1F1] pt-4">
-          <span className="font-medium">{blog.author?.name || "Unknown"}</span>
-          <span className="text-xs">{new Date(blog.createdAt).toLocaleDateString()}</span>
+        <div className="mt-auto flex justify-between items-center text-xs text-gray-400 border-t border-gray-100 pt-4">
+          <span className="font-medium text-teal-600">{blog.author?.name || "Unknown"}</span>
+          <span>{new Date(blog.createdAt).toLocaleDateString()}</span>
         </div>
+
       </div>
     </Link>
   );

@@ -8,7 +8,7 @@ const express=require('express');
  const upload=require('../middlewares/multer')
 const blogRouter=express.Router();
 blogRouter.post('/postBlog',verifyToken,requireAdmin,upload.single("image"),postBlog);
-blogRouter.put('/editblog/:slug',verifyToken,requireAdmin,editBlog);
+blogRouter.put('/editblog/:slug',verifyToken,requireAdmin,upload.single("image"),editBlog);
 blogRouter.delete('/deleteblog/:slug',verifyToken,requireAdmin,deleteBlog)
 blogRouter.get('/getblogs',publicAuth,getAllBlogs);
 blogRouter.get('/getblog/:slug',getBlog);

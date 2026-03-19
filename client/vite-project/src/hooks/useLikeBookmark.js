@@ -1,6 +1,6 @@
 import { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { optimisticLike, optimisticBookmark, syncLike, syncBookmark } from "../features/blogsSlice";
+import { optimisticLike, optimisticBookmark, syncLike, syncBookmark } from "../Slices/blogsSlice";
 
 const useLikeBookmark = (slug) => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ const useLikeBookmark = (slug) => {
         .unwrap()
         .then(() => { serverLiked.current = next; })
         .catch(() => {}); // rollback handled in slice
-    }, 60000);
+    }, 5000);
   };
 
   const handleBookmark = (e) => {
@@ -56,7 +56,7 @@ const useLikeBookmark = (slug) => {
         .unwrap()
         .then(() => { serverBookmarked.current = next; })
         .catch(() => {});
-    }, 60000);
+    }, 5000);
   };
 
   return { liked, likeCount, bookmarked, handleLike, handleBookmark };

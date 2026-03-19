@@ -1,4 +1,5 @@
 const User=require('../models/user');
+const State=require('../models/states')
 const bcrypt=require('bcrypt');
 const jwt=require('jsonwebtoken');
 const redisClient=require('../config/redis')
@@ -20,6 +21,7 @@ const signup=async(req,res)=>{
         password:hashPassword,
         role
     })
+     await State.updateOne({},{$inc:{totalUsersCount:1}});
     res.status(201).json({message:"User is created successfully",
         data:{
         user:{

@@ -12,11 +12,15 @@ export const logout=()=>{
 }
 
 export const checkAuth=()=>{
-   return axiosClient.get('/api/user/check-auth')
+   return axiosClient.get('/api/user/check-auth');
 }
 
-
-export const meBookmarks=()=>{
-   return axiosClient.get('/api/user/me/bookmarks');
+export const getDashboardStats=()=>{
+   return axiosClient.get('/api/dashboard');
+}
+export const meBookmarks=(cursor=null)=>{
+   const params = new URLSearchParams();
+   if (cursor) params.append("cursor", cursor);
+   return axiosClient.get(`/api/user/me/bookmarks?${params.toString()}`);
 }
 

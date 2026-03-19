@@ -1,5 +1,5 @@
 import {useEffect} from 'react';
-import {signupUser} from '../features/authSlice'
+import {signupUser} from '../Slices/authSlice'
 import {useSelector,useDispatch} from 'react-redux';
 import { NavLink,useNavigate } from 'react-router';
 import {useForm} from 'react-hook-form';
@@ -27,11 +27,11 @@ function SignupPage(){
       }
         useEffect(() => {
             if(user){
-            navigate('/login')
+            navigate('/signin')
             }
         }, [user, navigate]);
       return (
-  <div className="min-h-screen min-w-screen flex items-center justify-center bg-gradient-to-r from-blue-400 to-purple-600 px-4">
+  <div className="min-h-screen min-w-screen flex items-center justify-center px-4">
     <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
       <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Create Account</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
